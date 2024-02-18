@@ -1,7 +1,9 @@
+import { SkeletonCard } from '@/components/SkeletonCard';
+import { Button } from '@/components/ui/button';
 import { constructImageURL } from '@/lib/helpers';
 import { getAllSneakers } from '@/lib/pocketbase';
-import { Sneaker } from '@/types';
 import { Link, createFileRoute } from '@tanstack/react-router';
+import { RecordModel } from 'pocketbase';
 import { useEffect, useState } from 'react';
 
 export const Route = createFileRoute('/sneakers/')({
@@ -9,24 +11,21 @@ export const Route = createFileRoute('/sneakers/')({
 });
 
 function Sneakers() {
-  const [sneakers, setSneakers] = useState<Sneaker[]>([]);
+  const [sneakers, setSneakers] = useState<RecordModel[]>([]);
 
   useEffect(() => {
     async function fetchData() {
       const resp = await getAllSneakers();
-      setSneakers(resp.items as unknown as Sneaker[]);
+      setSneakers(resp.items);
     }
     fetchData();
   }, []);
 
-  console.log(sneakers);
-
   return (
     <div>
-      <div>
-        <h1 className="text-3xl font-bold py-10">Все кроссовки</h1>
-      </div>
-      <div className="w-full grid grid-cols-4 gap-4">
+      <h1 className="text-3xl font-bold py-10">Все кроссовки</h1>
+      <Button variant={'default'}>Показать фильтры</Button>
+      <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {sneakers.length > 0
           ? sneakers.map((sneaker) => {
               return (
@@ -54,7 +53,9 @@ function Sneakers() {
                 </Link>
               );
             })
-          : null}
+          : Array.from({ length: 6 }).map((_, index) => {
+              return <SkeletonCard key={index} />;
+            })}
       </div>
     </div>
   );
