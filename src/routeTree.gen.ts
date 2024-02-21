@@ -18,6 +18,7 @@ import { Route as SneakersIndexImport } from './routes/sneakers/index'
 // Create Virtual Routes
 
 const ProfileLazyImport = createFileRoute('/profile')()
+const FavouritesLazyImport = createFileRoute('/favourites')()
 const AboutLazyImport = createFileRoute('/about')()
 const IndexLazyImport = createFileRoute('/')()
 const SneakersSneakeridLazyImport = createFileRoute('/sneakers/$sneakerid')()
@@ -30,6 +31,11 @@ const ProfileLazyRoute = ProfileLazyImport.update({
   path: '/profile',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/profile.lazy').then((d) => d.Route))
+
+const FavouritesLazyRoute = FavouritesLazyImport.update({
+  path: '/favourites',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/favourites.lazy').then((d) => d.Route))
 
 const AboutLazyRoute = AboutLazyImport.update({
   path: '/about',
@@ -75,6 +81,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutLazyImport
       parentRoute: typeof rootRoute
     }
+    '/favourites': {
+      preLoaderRoute: typeof FavouritesLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/profile': {
       preLoaderRoute: typeof ProfileLazyImport
       parentRoute: typeof rootRoute
@@ -103,6 +113,7 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren([
   IndexLazyRoute,
   AboutLazyRoute,
+  FavouritesLazyRoute,
   ProfileLazyRoute,
   AuthSigninLazyRoute,
   AuthSignupLazyRoute,

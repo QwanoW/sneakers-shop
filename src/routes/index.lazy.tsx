@@ -16,6 +16,7 @@ import { SkeletonSliderCard } from '@/components/SkeletonSliderCard';
 import sneaker1 from '@/assets/img/sneak1.png';
 import sneaker2 from '@/assets/img/sneak2.png';
 import sneaker3 from '@/assets/img/sneak3.png';
+import { SneakerCard } from '@/components/SneakerCard';
 
 export const Route = createLazyFileRoute('/')({
   component: Index,
@@ -116,19 +117,7 @@ function Index() {
             {lastSneakers.length > 0
               ? lastSneakers.map(({ id, title, price, field, collectionName, type }) => (
                   <CarouselItem className="pl-6 sm:basis-1/2 lg:basis-1/3" key={id}>
-                    <div>
-                      <img
-                        className="bg-stone-200"
-                        src={constructImageURL(field, collectionName, id)}
-                        alt={title}
-                      />
-                      <Link to={`/sneakers/$sneakerid`} params={{ sneakerid: id }}>
-                        <h2 className="text-2xl font-semibold py-4 hover:text-red-500 transition">
-                          {type + ' ' + title}
-                        </h2>
-                      </Link>
-                      <span className="text-stone-500 text-lg">{price} ₽</span>
-                    </div>
+                    <SneakerCard {...{ id, title, price, field, collectionName, type }} />
                   </CarouselItem>
                 ))
               : Array.from({ length: 3 }).map((_, index) => (

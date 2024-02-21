@@ -30,7 +30,7 @@ function Header() {
         <span className="h-8 border-l border-gray-500"></span>
         {isUserValid ? (
           <>
-            <Link to="/">
+            <Link to="/favourites">
               <span className="material-symbols-outlined">favorite</span>
             </Link>
             <Link to="/">

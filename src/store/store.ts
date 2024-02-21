@@ -1,30 +1,43 @@
-import { authUser, isUserValid } from '@/lib/pocketbase';
+import { authUser, getAllFavourites, isValid } from '@/lib/pocketbase';
+import { RecordModel } from 'pocketbase';
 import { create } from 'zustand';
 
-export interface User {
-  id: string;
-  collectionId: string;
-  collectionName: string;
-  username: string;
-  verified: boolean;
-  emailVisibility: boolean;
-  email: string;
-  created: string;
-  updated: string;
-  avatar: string;
-  phone_number: string;
-}
+type authModel = typeof authUser;
 
 type Store = {
-  user: User | null;
-  setUser: (user: User | null) => void;
+  user?: authModel;
   isValid: boolean; // added isValid field
+  favourites?: RecordModel[]; // added favourites field
+
+  setUser: (user: RecordModel | undefined) => void;
   setIsValid: (isValid: boolean) => void; // added setIsValid method
+  setFavourites: (favourites: RecordModel[]) => void;
+  removeFromFavourites: (id: string) => void;
+  addToFavourites: (favourite: RecordModel) => void;
 };
 
-export const useStore = create<Store>((set) => ({
-  user: authUser as User | null,
-  setUser: (user) => set({ user }),
-  isValid: isUserValid, // initialize isValid
-  setIsValid: (isValid: boolean) => set({ isValid }), // initialize setIsValid
-}));
+export const useStore = create<Store>((set) => {
+  // initialize favourites
+  (async () => {
+    const fetchedFavourites = (await getAllFavourites()) || [];
+    set({ favourites: fetchedFavourites });
+  })();
+
+  return {
+    user: authUser,
+    isValid: isValid, // initialize isValid
+    favourites: [], // initialize favourites
+
+    setUser: (user) => set({ user }),
+    setIsValid: (isValid: boolean) => set({ isValid }), // initialize setIsValid
+
+    setFavourites: (favourites) => set({ favourites }),
+    removeFromFavourites: (id) => {
+      set((state) => ({
+        favourites: (state.favourites || []).filter((favourite) => favourite.id !== id),
+      }));
+    },
+    addToFavourites: (favourite) =>
+      set((state) => ({ favourites: [...(state.favourites || []), favourite] })),
+  };
+});

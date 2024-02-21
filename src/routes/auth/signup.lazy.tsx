@@ -9,13 +9,15 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useToast } from '@/components/ui/use-toast';
 import useRegister from '@/hooks/useRegister'; // make sure this hook exists and works as expected
 import { signUpSchema } from '@/lib/zod'; // make sure this schema exists and works as expected
-import { User, useStore } from '@/store/store';
+import { useStore } from '@/store/store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Label } from '@radix-ui/react-label';
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
-import { useState } from 'react';
+import { ClientResponseError } from 'pocketbase';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -24,44 +26,84 @@ export const Route = createLazyFileRoute('/auth/signup')({
 });
 
 function Signup() {
-  const [isLoading, setIsLoading] = useState(false);
-  const setIsValid = useStore((state) => state.setIsValid);
-  const setUser = useStore((state) => state.setUser);
-
-  const register = useRegister();
+  const { toast } = useToast();
+  const isValid = useStore((state) => state.isValid);
+  const { register, isLoading } = useRegister();
   const navigate = useNavigate({ from: '/auth/signup' });
+
+  useEffect(() => {
+    if (isValid) {
+      navigate({ to: '/' });
+    }
+  }, [isValid, navigate]);
 
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
-      username: '',
+      fullName: '',
       email: '',
       password: '',
       passwordConfirm: '',
-      phone_number: '',
+      phoneNumber: '',
       avatar: undefined,
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
+  const onSubmit = async (
+    data: z.infer<typeof signUpSchema> & { [key: string]: string | File | undefined },
+  ) => {
     try {
       if (data.password !== data.passwordConfirm) {
-        form.setError('passwordConfirm', {
-          type: 'custom',
-          message: 'Пароли не совпадают',
+        throw new ClientResponseError({
+          data: {
+            data: {
+              password: {
+                message: 'Пароли не совпадают',
+              },
+              passwordConfirm: {
+                message: 'Пароли не совпадают',
+              },
+            },
+          },
         });
-        return;
       }
 
-      setIsLoading(true);
-      const resp = await register(data);
-      setIsValid(true);
-      setUser(resp as User);
-      navigate({ to: '/' });
+      const formData = new FormData();
+
+      Object.keys(data).forEach((key) => {
+        if (data[key] !== undefined) {
+          if (data[key] instanceof File) {
+            formData.append(key, data[key] as File, (data[key] as File).name);
+          } else {
+            formData.append(key, data[key] as string);
+          }
+        }
+      });
+
+      await register(formData);
+      toast({
+        variant: 'default',
+        title: 'Регистрация прошла успешно!',
+        description: 'Теперь вы можете войти в свой аккаунт.',
+      });
+      navigate({ to: '/auth/signin' });
     } catch (error) {
-      alert(error);
-    } finally {
-      setIsLoading(false);
+      if (error instanceof ClientResponseError) {
+        const err = new ClientResponseError(error);
+
+        Object.keys(err.data.data).forEach((key) => {
+          form.setError(key as keyof z.infer<typeof signUpSchema>, {
+            type: 'custom',
+            message: err.data.data[key].message,
+          });
+        });
+      } else {
+        toast({
+          title: 'Что-то пошло не так',
+          description: 'Попробуйте ещё раз',
+          variant: 'destructive',
+        });
+      }
     }
   };
 
@@ -76,7 +118,7 @@ function Signup() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}
-              name="username"
+              name="fullName"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Имя пользователя</FormLabel>
@@ -128,12 +170,18 @@ function Signup() {
             />
             <FormField
               control={form.control}
-              name="phone_number"
+              name="phoneNumber"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Номер телефона</FormLabel>
                   <FormControl>
-                    <Input placeholder="+7(123)-123-12-12" {...field} />
+                    <Input
+                      type="tel"
+                      placeholder="+7(123)-123-12-12"
+                      minLength={17}
+                      maxLength={17}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
