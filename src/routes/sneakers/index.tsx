@@ -64,7 +64,7 @@ function Sneakers() {
         <Button onClick={() => setShowFilters((state) => !state)}>Показать фильтры</Button>
       </div>
       {showFilters && (
-        <div className="w-full flex gap-x-20 bg-white p-5 rounded-lg">
+        <div className="w-full flex flex-col sm:flex-row gap-x-20 gap-y-10 bg-white p-5 rounded-lg">
           <div className="flex flex-col gap-y-2">
             <h3 className="text-2xl font-medium">Сезон</h3>
             <div className="flex flex-col gap-y-2">
@@ -116,6 +116,7 @@ function Sneakers() {
           </div>
         </div>
       )}
+      {sneakers.length === 0 && !isLoading && <p className='text-2xl text-center'>Ничего не найдено... 😔</p>}
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {isLoading
           ? Array.from({ length: 6 }).map((_, index) => {
