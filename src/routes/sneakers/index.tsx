@@ -27,6 +27,7 @@ function Sneakers() {
 
   const fetchSneakers = useCallback(async () => {
     try {
+      setIsLoading(true);
       const resp = await getAllSneakers(debouncedSearch, gendersFilter, categoriesFilter);
       setSneakers(resp.items);
       setIsLoading(false);
