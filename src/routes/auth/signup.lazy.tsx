@@ -108,7 +108,7 @@ function Signup() {
   };
 
   return (
-    <Card className="w-[500px] mx-auto">
+    <Card className="w-full max-w-[500px] mx-auto rounded-none">
       <CardHeader>
         <CardTitle>Регистрация</CardTitle>
         <CardDescription>Введите свои данные</CardDescription>
@@ -194,7 +194,7 @@ function Signup() {
                 <FormItem>
                   <FormControl>
                     <div className="grid w-full items-center gap-1.5">
-                      <Label htmlFor="picture">Picture</Label>
+                      <Label htmlFor="picture">Фотография (необязательно)</Label>
                       <Input
                         id="picture"
                         type="file"

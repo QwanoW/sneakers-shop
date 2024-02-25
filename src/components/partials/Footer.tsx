@@ -4,7 +4,7 @@ import { Button } from '../ui/button';
 function Footer() {
   return (
     <footer className="w-full bg-stone-300 p-10 flex flex-col">
-      <div className="flex flex-col gap-y-5 md:gap-0 md:flex-row justify-between">
+      <div className="w-full max-w-7xl mx-auto flex flex-col gap-y-5 md:gap-0 md:flex-row justify-between">
         <div>
           <p className="text-2xl">
             <span className="">SHOP</span>. ©2024
@@ -39,7 +39,6 @@ function Footer() {
           </div>
         </div>
       </div>
-      <div></div>
     </footer>
   );
 }

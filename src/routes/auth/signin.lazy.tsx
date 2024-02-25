@@ -66,7 +66,7 @@ function Signin() {
   };
 
   return (
-    <Card className="w-[500px] mx-auto">
+    <Card className="w-full max-w-[500px] mx-auto rounded-none">
       <CardHeader>
         <CardTitle>Вход</CardTitle>
         <CardDescription>Введите свои данные</CardDescription>
