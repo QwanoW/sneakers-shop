@@ -20,13 +20,13 @@ const useFavourite = (id: string) => {
       }
 
       if (isFavourite && favouriteRecord) {
+        setIsFavourite(false);
         await deleteFromFavouritesCollection(favouriteRecord.id);
         removeFromFavourites(favouriteRecord.id);
-        setIsFavourite(false);
       } else {
+        setIsFavourite(true);
         const record = await addToFavouritesCollection(id);
         addToFavourites(record);
-        setIsFavourite(true);
       }
     } catch (error) {
       if (error instanceof ClientResponseError) {

@@ -34,7 +34,7 @@ function SneakerItem() {
   const [sneaker, setSneaker] = useState<RecordModel | null>(null);
   const [selectedSize, setSelectedSize] = useState(cartItem?.size || 36);
 
-  const { isInCart, handleCartClick } = useCart(sneakerid);
+  const { isInCart, handleCartClick, isLoading } = useCart(sneakerid);
   const { isFavourite, handleFavouriteClick } = useFavourite(sneakerid);
 
   const handleSelectSize = useCallback((size: number) => setSelectedSize(size), []);
@@ -86,6 +86,7 @@ function SneakerItem() {
         <div className="flex flex-col sm:flex-col justify-between gap-3">
           <Button
             variant={isInCart ? 'destructive' : 'default'}
+            disabled={isLoading}
             className="rounded-none p-7"
             onClick={() => handleCartClick(selectedSize)}>
             {isInCart ? 'Убрать из корзины' : 'Добавить в корзину'}

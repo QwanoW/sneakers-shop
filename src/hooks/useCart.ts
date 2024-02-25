@@ -10,6 +10,7 @@ const useCart = (id: string) => {
   const { toast } = useToast();
   const { isValid, cartItems, addToCartItems, removeFromCartItems } = useStore((state) => state);
   const cartItem = cartItems?.find((f) => f?.expand?.sneaker.id === id);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isInCart, setIsInCart] = useState<boolean>(Boolean(cartItem));
 
   const handleCartClick = async (size: number, quantity: number = 1) => {
@@ -20,15 +21,20 @@ const useCart = (id: string) => {
       }
 
       if (isInCart && cartItem) {
+        setIsLoading(true);
         await deleteFromCartItemsCollection(cartItem.id);
         removeFromCartItems(cartItem.id);
         setIsInCart(false);
+        setIsLoading(false);
       } else {
+        setIsLoading(true);
         const record = await addToCartItemsCollection(id, size, quantity);
         addToCartItems(record);
         setIsInCart(true);
+        setIsLoading(false);
       }
     } catch (error) {
+      setIsLoading(false);
       if (error instanceof ClientResponseError) {
         const err = new ClientResponseError(error);
         toast({
@@ -49,6 +55,7 @@ const useCart = (id: string) => {
   return {
     handleCartClick,
     isInCart,
+    isLoading,
   };
 };
 

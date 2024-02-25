@@ -1,7 +1,7 @@
 import { createRootRoute, Outlet } from '@tanstack/react-router';
 import { Toaster } from '@/components/ui/toaster';
-import Header from '../components/layout/Header';
-import Footer from '@/components/layout/Footer';
+import Header from '../components/partials/Header';
+import Footer from '@/components/partials/Footer';
 import '../index.css';
 import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
