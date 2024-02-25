@@ -1,6 +1,6 @@
 import { constructImageURL } from '@/lib/utils';
 import { RecordModel } from 'pocketbase';
-import { Separator } from './ui/separator';
+import { Separator } from '../ui/separator';
 import useCartItemQuantity from '@/hooks/useCartItemQuantity';
 import useCart from '@/hooks/useCart';
 

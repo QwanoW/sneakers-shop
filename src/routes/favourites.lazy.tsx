@@ -1,5 +1,5 @@
 import { createLazyFileRoute } from '@tanstack/react-router';
-import { SneakerCard } from '@/components/SneakerCard';
+import { SneakerCard } from '@/components/skeletons/SneakerCard';
 import { useStore } from '@/store/store';
 import empty_favourites from '@/assets/img/empty_favourites.png';
 

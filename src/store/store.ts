@@ -4,6 +4,7 @@ import {
   getCartItemsCollection,
   getDeliveryPoints,
   getOrdersCollection,
+  getSneakersCategories,
   isValid,
 } from '@/lib/pocketbase';
 import { RecordModel } from 'pocketbase';
@@ -22,6 +23,7 @@ type Store = {
   cartItems?: RecordModel[];
   deliveryPoints: RecordModel[];
   orders: RecordModelWithItems[];
+  categories?: RecordModel[];
 
   setUser: (user: RecordModel | undefined) => void;
   setIsValid: (isValid: boolean) => void; // added setIsValid method
@@ -63,6 +65,12 @@ export const useStore = create<Store>((set) => {
   (async () => {
     const fetchedOrders = ((await getOrdersCollection()) || []) as RecordModelWithItems[];
     set({ orders: fetchedOrders });
+  })();
+
+  // initialize categories
+  (async () => {
+    const fetchedCategories = (await getSneakersCategories()) || [];
+    set({ categories: fetchedCategories });
   })();
 
   return {

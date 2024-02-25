@@ -6,7 +6,7 @@ import '../index.css';
 import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { Sheet } from '@/components/ui/sheet';
-import CartSheetContent from '@/components/CartSheetContent';
+import CartSheetContent from '@/components/cart/CartSheetContent';
 
 export const Route = createRootRoute({
   component: () => (

@@ -12,8 +12,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { getBrands, getLastSneakers } from '@/lib/pocketbase';
 import { RecordModel } from 'pocketbase';
 import { constructImageURL } from '@/lib/utils';
-import { SkeletonSliderCard } from '@/components/SkeletonSliderCard';
-import { SneakerCard } from '@/components/SneakerCard';
+import { SkeletonSliderCard } from '@/components/skeletons/SkeletonSliderCard';
+import { SneakerCard } from '@/components/skeletons/SneakerCard';
 import {
   Accordion,
   AccordionContent,

@@ -22,9 +22,40 @@ export async function loginUser(userData: { email: string; password: string }) {
   }
 }
 
-export async function getAllSneakers(page: number = 1, perPage: number = 50) {
+export async function getAllSneakers(
+  search: string = '',
+  genders: string[] = [],
+  categories: string[] = [],
+  page: number = 1,
+  perPage: number = 50,
+) {
   try {
+    let filter = '';
+
+    if (search.length > 0) {
+      filter += `title ~ '${search}'`;
+    }
+
+    if (genders.length > 0) {
+      if (filter.length > 0) {
+        filter += ' && ';
+      }
+      
+      const genderFilter = genders.map(gender => `gender = '${gender}'`).join(' || ');
+      filter += `(${genderFilter})`;
+    }
+
+    if (categories.length > 0) {
+      if (filter.length > 0) {
+        filter += ' && ';
+      }
+      const categoryFilter = categories.map(category => `category = '${category}'`).join(' || ');
+      filter += `(${categoryFilter})`;
+    }
+
+    console.log(filter);
     return await pb.collection('sneakers').getList(page, perPage, {
+      filter,
       expand: 'brand,category',
     });
   } catch (error) {
@@ -212,6 +243,15 @@ export async function createOrder(orderData: OrderData) {
 export async function getDeliveryPoints() {
   try {
     return await pb.collection('delivery_points').getFullList();
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function getSneakersCategories() {
+  try {
+    return await pb.collection('sneakers_categories').getFullList();
   } catch (error) {
     console.error(error);
     throw error;

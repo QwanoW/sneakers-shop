@@ -1,5 +1,5 @@
 import { useStore } from '@/store/store';
-import { SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
+import { SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
 import CartItem from './CartItem';
 import { Link } from '@tanstack/react-router';
 

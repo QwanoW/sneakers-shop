@@ -28,13 +28,13 @@ function Footer() {
           <p className="font-medium text-2xl">sneakers@shop.ru</p>
           <div>
             <Button asChild variant={'link'}>
-              <a href="vk.com">ВКонтакте</a>
+              <a href="https://vk.com">ВКонтакте</a>
             </Button>
             <Button asChild variant={'link'}>
-              <a href="instagram.com">Instagram</a>
+              <a href="https://instagram.com">Instagram</a>
             </Button>
             <Button asChild variant={'link'}>
-              <a href="facebook.com">Facebook</a>
+              <a href="https://facebook.com">Facebook</a>
             </Button>
           </div>
         </div>
