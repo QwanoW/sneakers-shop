@@ -1,4 +1,4 @@
-import CreateOrderForm from '@/components/order/createOrderForm';
+import CreateOrderForm from '@/components/order/CreateOrderForm';
 import { useToast } from '@/components/ui/use-toast';
 import { createOrder, deleteFromCartItemsCollection } from '@/lib/pocketbase';
 import { useStore } from '@/store/store';
