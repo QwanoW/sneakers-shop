@@ -1,10 +1,13 @@
-import { SelectSize } from '@/components/selectSize';
 import { Button } from '@/components/ui/button';
-import { constructImageURL } from '@/lib/helpers';
-import { getSneakerByID } from '@/lib/pocketbase';
+import { constructImageURL } from '@/lib/utils';
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
+import { getCartItem } from '@/store/store';
+import { getSneakerByID } from '@/lib/pocketbase';
 import { RecordModel } from 'pocketbase';
-import { useCallback, useEffect, useState } from 'react';
+import { SelectSize } from '@/components/selectSize';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import useCart from '@/hooks/useCart';
+import useFavourite from '@/hooks/useFavourite';
 
 export const Route = createLazyFileRoute('/sneakers/$sneakerid')({
   component: SneakerItem,
@@ -25,19 +28,28 @@ function SneakerItem() {
     navigate({ to: '/' });
   }
 
-  const sizes = [36, 37, 38, 39, 40, 41, 42, 43, 44, 45];
+  const cartItem = getCartItem(sneakerid);
+
+  const sizes = useMemo(() => [36, 37, 38, 39, 40, 41, 42, 43, 44, 45], []);
   const [sneaker, setSneaker] = useState<RecordModel | null>(null);
-  const [selectedSize, setSelectedSize] = useState(sizes[0]);
+  const [selectedSize, setSelectedSize] = useState(cartItem?.size || 36);
+
+  const { isInCart, handleCartClick } = useCart(sneakerid);
+  const { isFavourite, handleFavouriteClick } = useFavourite(sneakerid);
 
   const handleSelectSize = useCallback((size: number) => setSelectedSize(size), []);
 
   useEffect(() => {
     async function fetchData() {
       const resp = await getSneakerByID(sneakerid);
+      const cartItem = getCartItem(sneakerid);
+      if (cartItem) {
+        setSelectedSize(cartItem.size);
+      }
       setSneaker(resp);
     }
     fetchData();
-  }, [sneakerid]);
+  }, [sneakerid, sizes]);
 
   if (!sneaker) {
     return <div>Загрузка...</div>;
@@ -53,7 +65,7 @@ function SneakerItem() {
         />
       </div>
 
-      <div className="w-full md:w-1/2 p-5 space-y-10">
+      <div className="w-full md:w-1/2 p-5 space-y-8">
         <h1 className="text-5xl font-semibold">
           {sneaker?.type} {sneaker?.title}
         </h1>
@@ -71,10 +83,22 @@ function SneakerItem() {
             ))}
           </div>
         </div>
-        <div className='flex flex-col sm:flex-col justify-between gap-3'>
-          <Button className='rounded-none p-7'>Добавить в корзину</Button>
-          <Button variant={'outline'} className='rounded-none p-7'>Добавить в избранное</Button>
+        <div className="flex flex-col sm:flex-col justify-between gap-3">
+          <Button
+            variant={isInCart ? 'destructive' : 'default'}
+            className="rounded-none p-7"
+            onClick={() => handleCartClick(selectedSize)}>
+            {isInCart ? 'Убрать из корзины' : 'Добавить в корзину'}
+          </Button>
+          <Button
+            variant={isFavourite ? 'secondary' : 'default'}
+            className="rounded-none border border-stone-300 p-7"
+            onClick={handleFavouriteClick}>
+            {isFavourite ? 'Убрать из избранного' : 'Добавить в избранное'}
+          </Button>
         </div>
+        <h2 className="font-bold text-3xl">Описание</h2>
+        <p className="text-lg">{sneaker?.description}</p>
       </div>
     </div>
   );

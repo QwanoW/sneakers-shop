@@ -18,10 +18,14 @@ import { Route as SneakersIndexImport } from './routes/sneakers/index'
 // Create Virtual Routes
 
 const ProfileLazyImport = createFileRoute('/profile')()
+const PolicyLazyImport = createFileRoute('/policy')()
+const OfferLazyImport = createFileRoute('/offer')()
 const FavouritesLazyImport = createFileRoute('/favourites')()
-const AboutLazyImport = createFileRoute('/about')()
+const AgreementLazyImport = createFileRoute('/agreement')()
 const IndexLazyImport = createFileRoute('/')()
+const OrdersIndexLazyImport = createFileRoute('/orders/')()
 const SneakersSneakeridLazyImport = createFileRoute('/sneakers/$sneakerid')()
+const OrdersCreateLazyImport = createFileRoute('/orders/create')()
 const AuthSignupLazyImport = createFileRoute('/auth/signup')()
 const AuthSigninLazyImport = createFileRoute('/auth/signin')()
 
@@ -32,20 +36,35 @@ const ProfileLazyRoute = ProfileLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/profile.lazy').then((d) => d.Route))
 
+const PolicyLazyRoute = PolicyLazyImport.update({
+  path: '/policy',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/policy.lazy').then((d) => d.Route))
+
+const OfferLazyRoute = OfferLazyImport.update({
+  path: '/offer',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/offer.lazy').then((d) => d.Route))
+
 const FavouritesLazyRoute = FavouritesLazyImport.update({
   path: '/favourites',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/favourites.lazy').then((d) => d.Route))
 
-const AboutLazyRoute = AboutLazyImport.update({
-  path: '/about',
+const AgreementLazyRoute = AgreementLazyImport.update({
+  path: '/agreement',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
+} as any).lazy(() => import('./routes/agreement.lazy').then((d) => d.Route))
 
 const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+
+const OrdersIndexLazyRoute = OrdersIndexLazyImport.update({
+  path: '/orders/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/orders/index.lazy').then((d) => d.Route))
 
 const SneakersIndexRoute = SneakersIndexImport.update({
   path: '/sneakers/',
@@ -58,6 +77,11 @@ const SneakersSneakeridLazyRoute = SneakersSneakeridLazyImport.update({
 } as any).lazy(() =>
   import('./routes/sneakers/$sneakerid.lazy').then((d) => d.Route),
 )
+
+const OrdersCreateLazyRoute = OrdersCreateLazyImport.update({
+  path: '/orders/create',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/orders/create.lazy').then((d) => d.Route))
 
 const AuthSignupLazyRoute = AuthSignupLazyImport.update({
   path: '/auth/signup',
@@ -77,12 +101,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
-    '/about': {
-      preLoaderRoute: typeof AboutLazyImport
+    '/agreement': {
+      preLoaderRoute: typeof AgreementLazyImport
       parentRoute: typeof rootRoute
     }
     '/favourites': {
       preLoaderRoute: typeof FavouritesLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/offer': {
+      preLoaderRoute: typeof OfferLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/policy': {
+      preLoaderRoute: typeof PolicyLazyImport
       parentRoute: typeof rootRoute
     }
     '/profile': {
@@ -97,12 +129,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSignupLazyImport
       parentRoute: typeof rootRoute
     }
+    '/orders/create': {
+      preLoaderRoute: typeof OrdersCreateLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/sneakers/$sneakerid': {
       preLoaderRoute: typeof SneakersSneakeridLazyImport
       parentRoute: typeof rootRoute
     }
     '/sneakers/': {
       preLoaderRoute: typeof SneakersIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/orders/': {
+      preLoaderRoute: typeof OrdersIndexLazyImport
       parentRoute: typeof rootRoute
     }
   }
@@ -112,13 +152,17 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren([
   IndexLazyRoute,
-  AboutLazyRoute,
+  AgreementLazyRoute,
   FavouritesLazyRoute,
+  OfferLazyRoute,
+  PolicyLazyRoute,
   ProfileLazyRoute,
   AuthSigninLazyRoute,
   AuthSignupLazyRoute,
+  OrdersCreateLazyRoute,
   SneakersSneakeridLazyRoute,
   SneakersIndexRoute,
+  OrdersIndexLazyRoute,
 ])
 
 /* prettier-ignore-end */

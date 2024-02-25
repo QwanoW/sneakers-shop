@@ -14,14 +14,16 @@ export function Favourites() {
       <h1 className="py-14 font-bold text-4xl">Мои избранные</h1>
       {favourites && favourites.length ? (
         <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {favourites.map((fav) => {
-            if (fav.expand) {
-              const { id, title, type, price, field, collectionName } = fav.expand.sneaker;
-              return (
-                <SneakerCard key={id} {...{ id, title, type, price, field, collectionName }} />
-              );
-            }
-          })}
+          {favourites
+            .sort((a, b) => new Date(a.created).getTime() - new Date(b.created).getTime())
+            .map((fav) => {
+              if (fav.expand) {
+                const { id, title, type, price, field, collectionName } = fav.expand.sneaker;
+                return (
+                  <SneakerCard key={id} {...{ id, title, type, price, field, collectionName }} />
+                );
+              }
+            })}
         </div>
       ) : (
         <div className="w-full h-full flex flex-col justify-center items-center">

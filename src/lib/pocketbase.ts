@@ -66,10 +66,75 @@ export async function getBrands() {
   }
 }
 
+export async function getCartItemsCollection(): Promise<RecordModel[]> {
+  try {
+    return await pb.collection('cart_items').getFullList({
+      expand: 'sneaker',
+    });
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function addToCartItemsCollection(
+  sneakerID: string,
+  size: number,
+  quantity: number = 1,
+) {
+  try {
+    if (pb.authStore.model && !pb.authStore.model.id) {
+      throw new Error('Ошибка');
+    }
+
+    return await pb.collection('cart_items').create(
+      {
+        customer: pb.authStore.model?.id,
+        sneaker: sneakerID,
+        quantity,
+        size,
+      },
+      { expand: 'sneaker' },
+    );
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export async function deleteFromCartItemsCollection(recordID: string) {
+  try {
+    if (pb.authStore.model && !pb.authStore.model.id) {
+      throw new Error('Ошибка');
+    }
+
+    return await pb.collection('cart_items').delete(recordID);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export async function updateCartItemQuantity(recordID: string, quantity: number) {
+  try {
+    if (pb.authStore.model && !pb.authStore.model.id) {
+      throw new Error('Ошибка');
+    }
+
+    return await pb.collection('cart_items').update(recordID, {
+      quantity,
+    });
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
 export async function getAllFavourites(): Promise<RecordModel[]> {
   try {
     return await pb.collection('favourites').getFullList({
       expand: 'sneaker',
+      sort: '-created',
     });
   } catch (error) {
     console.error(error);
@@ -98,9 +163,57 @@ export async function addToFavouritesCollection(id: string) {
 
 export async function deleteFromFavouritesCollection(id: string) {
   try {
+    if (pb.authStore.model && !pb.authStore.model.id) {
+      throw new Error('Ошибка');
+    }
+
     return await pb.collection('favourites').delete(id);
   } catch (error) {
     console.log(error);
+    throw error;
+  }
+}
+
+export async function getOrdersCollection() {
+  try {
+    return await pb.collection('orders').getFullList({
+      sort: '-created',
+    });
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+interface OrderData {
+  total_price: number;
+  wishes: string;
+  items: RecordModel[];
+  delivery_point: string;
+}
+
+const defaultStatusValue = 'оплачен';
+
+export async function createOrder(orderData: OrderData) {
+  try {
+    if (pb.authStore.model && !pb.authStore.model.id) {
+      throw new Error('Ошибка');
+    }
+
+    return await pb
+      .collection('orders')
+      .create({ ...orderData, status: defaultStatusValue, customer: pb.authStore.model?.id });
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function getDeliveryPoints() {
+  try {
+    return await pb.collection('delivery_points').getFullList();
+  } catch (error) {
+    console.error(error);
     throw error;
   }
 }

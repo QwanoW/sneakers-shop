@@ -11,12 +11,19 @@ import { Link, createLazyFileRoute } from '@tanstack/react-router';
 import { useCallback, useEffect, useState } from 'react';
 import { getBrands, getLastSneakers } from '@/lib/pocketbase';
 import { RecordModel } from 'pocketbase';
-import { constructImageURL } from '@/lib/helpers';
+import { constructImageURL } from '@/lib/utils';
 import { SkeletonSliderCard } from '@/components/SkeletonSliderCard';
+import { SneakerCard } from '@/components/SneakerCard';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import sneaker1 from '@/assets/img/sneak1.png';
 import sneaker2 from '@/assets/img/sneak2.png';
 import sneaker3 from '@/assets/img/sneak3.png';
-import { SneakerCard } from '@/components/SneakerCard';
+import aboutImg from '@/assets/img/about.jpg';
 
 export const Route = createLazyFileRoute('/')({
   component: Index,
@@ -44,9 +51,13 @@ function Index() {
   const [brands, setBrands] = useState<RecordModel[]>([]);
 
   const fetchData = useCallback(async () => {
-    const [lastSneakersResp, brandsResp] = await Promise.all([getLastSneakers(), getBrands()]);
-    setLastSneakers(lastSneakersResp);
-    setBrands(brandsResp);
+    try {
+      const [lastSneakersResp, brandsResp] = await Promise.all([getLastSneakers(), getBrands()]);
+      setLastSneakers(lastSneakersResp);
+      setBrands(brandsResp);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
   }, []);
 
   useEffect(() => {
@@ -84,7 +95,7 @@ function Index() {
       </Carousel>
 
       <div>
-        <h1 className="text-3xl font-bold py-14">Обувь</h1>
+        <h2 className="text-3xl font-bold py-14">Обувь</h2>
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
           <Link to="/sneakers" params={{ gender: 'male' }} className="group">
             <div
@@ -145,6 +156,65 @@ function Index() {
             ))}
         </CarouselContent>
       </Carousel>
+
+      <div className="space-y-5">
+        <h2 className="text-4xl font-medium">О нас</h2>
+        <img className="hue-rotate-180" src={aboutImg} alt="about-banner" />
+        <p className="text-lg">
+          Мы - интернет-магазин кроссовок, предлагающий широкий ассортимент моделей для всех
+          возрастов и стилей. У нас вы найдете самые популярные бренды и последние новинки в мире
+          кроссовок. Наша команда стремится предоставить вам лучший выбор и качество обслуживания.
+          Мы гарантируем быструю доставку и отличную поддержку клиентов. Приятных покупок!
+        </p>
+      </div>
+
+      <div className="space-y-5 pb-10">
+        <h2 className="text-4xl font-medium">Ответы на вопросы</h2>
+        <Accordion type="single" collapsible>
+          <AccordionItem value="item-1">
+            <AccordionTrigger>
+              <h3 className="text-xl">Пришло не то, что я заказывал</h3>
+            </AccordionTrigger>
+            <AccordionContent>
+              <p className="text-lg">
+                Свяжитесь, пожалуйста, с менеджером, и мы постараемся решить данную проблему в
+                кратчайшие сроки.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-2">
+            <AccordionTrigger>
+              <h3 className="text-xl">Где мой заказ?</h3>
+            </AccordionTrigger>
+            <AccordionContent>
+              <p className="text-lg">Отследить статус заказа можно в личном кабинете.</p>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-3">
+            <AccordionTrigger>
+              <h3 className="text-xl text-start">Вы осуществляете международную доставку?</h3>
+            </AccordionTrigger>
+            <AccordionContent>
+              <p className="text-lg">
+                Да, мы осуществляем международную доставку во многие страны по. Пожалуйста,
+                ознакомьтесь с нашей политикой доставки для получения дополнительной информации и
+                списка стран, в которые мы осуществляем доставку.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-4">
+            <AccordionTrigger>
+              <h3 className="text-xl">Мои данные в безопасности?</h3>
+            </AccordionTrigger>
+            <AccordionContent>
+              <p className="text-lg">
+                Мы строго следуем существующей политике конфиденциальности, поэтому можем
+                гарантировать полную безопасность персональных данных наших покупателей.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </div>
     </div>
   );
 }

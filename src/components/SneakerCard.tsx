@@ -1,10 +1,7 @@
-import { constructImageURL } from '@/lib/helpers';
-import { addToFavouritesCollection, deleteFromFavouritesCollection } from '@/lib/pocketbase';
-import { useStore } from '@/store/store';
-import { Link, useNavigate } from '@tanstack/react-router';
-import { ClientResponseError } from 'pocketbase';
+import { constructImageURL } from '@/lib/utils';
+import { Link } from '@tanstack/react-router';
 import { FC, memo } from 'react';
-import { useToast } from './ui/use-toast';
+import useFavourite from '@/hooks/useFavourite';
 
 interface SneakerCardProps {
   id: string;
@@ -17,50 +14,13 @@ interface SneakerCardProps {
 
 export const SneakerCard: FC<SneakerCardProps> = memo(
   ({ id, title, type, price, field, collectionName }) => {
-    const navigate = useNavigate();
-    const { toast } = useToast();
-    const { isValid, favourites, addToFavourites, removeFromFavourites } = useStore(
-      (state) => state,
-    );
-    const favourite = favourites?.filter((s) => s.sneaker === id)[0];
-
-    const handleFavouriteClick = async () => {
-      try {
-        if (!isValid) {
-          navigate({ to: '/auth/signin' });
-          return;
-        }
-
-        if (favourite) {
-          deleteFromFavouritesCollection(favourite.id).then(() =>
-            removeFromFavourites(favourite.id),
-          );
-        } else {
-          addToFavouritesCollection(id).then((record) => addToFavourites(record));
-        }
-      } catch (error) {
-        if (error instanceof ClientResponseError) {
-          const err = new ClientResponseError(error);
-          toast({
-            title: err.name,
-            description: err.message,
-            variant: 'destructive',
-          });
-        } else {
-          toast({
-            title: 'Не удалось добавить товар в избранное',
-            description: 'Попробуйте еще раз',
-            variant: 'destructive',
-          });
-        }
-      }
-    };
+    const { handleFavouriteClick, isFavourite } = useFavourite(id);
 
     return (
       <div className="relative">
         <span
           onClick={handleFavouriteClick}
-          className={`${favourite ? 'active' : ''} material-symbols-outlined absolute left-2 top-2 text-5xl cursor-pointer`}>
+          className={`${isFavourite ? 'active' : ''} material-symbols-outlined absolute left-2 top-2 text-5xl cursor-pointer`}>
           favorite
         </span>
         <img
